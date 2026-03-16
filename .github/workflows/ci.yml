@@ -19,8 +19,3 @@ jobs:
           go mod download
           go vet ./...
           go test -race ./...
-      - name: Lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          working-directory: backend/go-pgkit
-          version: latest

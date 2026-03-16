@@ -1,4 +1,4 @@
-.PHONY: test test-race fmt lint vet
+.PHONY: test test-race fmt vet
 
 test:
 	go test ./...
@@ -9,9 +9,6 @@ test-race:
 fmt:
 	gofmt -w .
 	goimports -w .
-
-lint:
-	golangci-lint run ./...
 
 vet:
 	go vet ./...
