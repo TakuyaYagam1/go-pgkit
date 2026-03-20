@@ -1,4 +1,4 @@
-module github.com/TakuyaYagam1/go-pgkit
+module github.com/takuya-go-kit/go-pgkit
 
 go 1.25.0
 
