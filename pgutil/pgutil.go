@@ -14,22 +14,25 @@ func IsNoRows(err error) bool {
 	return err != nil && errors.Is(err, pgx.ErrNoRows)
 }
 
+// IsPgErrorCode reports whether err is or wraps a PgError with the given SQLSTATE code.
+func IsPgErrorCode(err error, code string) bool {
+	var pgErr *pgconn.PgError
+	return err != nil && errors.As(err, &pgErr) && pgErr.Code == code
+}
+
 // IsPgUniqueViolation reports whether err is a PostgreSQL unique constraint violation (SQLSTATE 23505).
 func IsPgUniqueViolation(err error) bool {
-	var pgErr *pgconn.PgError
-	return err != nil && errors.As(err, &pgErr) && pgErr.Code == "23505"
+	return IsPgErrorCode(err, "23505")
 }
 
 // IsForeignKeyViolation reports whether err is a PostgreSQL foreign key violation (SQLSTATE 23503).
 func IsForeignKeyViolation(err error) bool {
-	var pgErr *pgconn.PgError
-	return err != nil && errors.As(err, &pgErr) && pgErr.Code == "23503"
+	return IsPgErrorCode(err, "23503")
 }
 
 // IsNotNullViolation reports whether err is a PostgreSQL not null violation (SQLSTATE 23502).
 func IsNotNullViolation(err error) bool {
-	var pgErr *pgconn.PgError
-	return err != nil && errors.As(err, &pgErr) && pgErr.Code == "23502"
+	return IsPgErrorCode(err, "23502")
 }
 
 // PgErrorCode extracts the SQLSTATE code from err, or "" if err is not a PgError.

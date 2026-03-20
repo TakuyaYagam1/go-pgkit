@@ -3,7 +3,8 @@
 // # Error checks
 //
 // IsNoRows reports whether err is or wraps pgx.ErrNoRows (use after QueryRow when a missing row is expected).
-// IsPgUniqueViolation reports whether err is a PostgreSQL unique constraint violation (SQLSTATE 23505).
+// IsPgErrorCode reports whether err is a PgError with the given SQLSTATE code.
+// IsPgUniqueViolation, IsForeignKeyViolation, IsNotNullViolation are conveniences for common codes (23505, 23503, 23502).
 //
 // # Timestamp conversion
 //

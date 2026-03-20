@@ -1,13 +1,16 @@
-.PHONY: test test-unit test-integration fmt vet
+.PHONY: test test-race test-bench test-integration fmt vet cover tidy
 
 test:
-	go test -race -tags=integration ./...
+	go test ./...
 
-test-unit:
+test-race:
 	go test -race ./...
 
+test-bench:
+	go test -bench=. ./...
+
 test-integration:
-	go test -race -run 'Test' -tags=integration -count=1 ./...
+	go test -race -tags=integration -count=1 ./...
 
 fmt:
 	gofmt -w .
@@ -15,3 +18,9 @@ fmt:
 
 vet:
 	go vet ./...
+
+cover:
+	go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out
+
+tidy:
+	go mod tidy

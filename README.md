@@ -24,6 +24,7 @@ import "github.com/TakuyaYagam1/go-pgkit/migrator/migrate"
 ### pgutil
 
 - **IsNoRows(err)** — true if err is or wraps pgx.ErrNoRows
+- **IsPgErrorCode(err, code)** — true if err is a PgError with the given SQLSTATE code
 - **IsPgUniqueViolation(err)** — true if PostgreSQL unique violation (23505)
 - **IsForeignKeyViolation(err)** — true if PostgreSQL foreign key violation (23503)
 - **IsNotNullViolation(err)** — true if PostgreSQL not null violation (23502)
