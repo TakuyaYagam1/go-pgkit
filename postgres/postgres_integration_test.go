@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/takuya-go-kit/go-pgkit/migrator/testutil"
+	"github.com/wahrwelt-kit/go-pgkit/migrator/testutil"
 )
 
 func TestNew(t *testing.T) {

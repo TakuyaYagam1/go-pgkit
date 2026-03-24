@@ -11,7 +11,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 
-	"github.com/takuya-go-kit/go-pgkit/postgres"
+	"github.com/wahrwelt-kit/go-pgkit/postgres"
 )
 
 // Run runs golang-migrate "up" from file://migrationsPath using connURL. ErrNoChange is ignored. ctx is checked before starting; if cancelled, returns ctx.Err(). The library's Up() does not accept context, so a migration in progress cannot be cancelled—on context cancellation Run returns only after the current Up() call completes. For graceful shutdown, run migrations in a separate one-off process (e.g. init container or CI job); otherwise an in-progress migration will block process exit until it finishes.

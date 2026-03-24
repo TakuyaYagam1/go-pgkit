@@ -1,22 +1,22 @@
 # go-pgkit
 
-[![CI](https://github.com/takuya-go-kit/go-pgkit/actions/workflows/ci.yml/badge.svg)](https://github.com/takuya-go-kit/go-pgkit/actions/workflows/ci.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/takuya-go-kit/go-pgkit.svg)](https://pkg.go.dev/github.com/takuya-go-kit/go-pgkit)
-[![Go Report Card](https://goreportcard.com/badge/github.com/takuya-go-kit/go-pgkit)](https://goreportcard.com/report/github.com/takuya-go-kit/go-pgkit)
+[![CI](https://github.com/wahrwelt-kit/go-pgkit/actions/workflows/ci.yml/badge.svg)](https://github.com/wahrwelt-kit/go-pgkit/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/wahrwelt-kit/go-pgkit.svg)](https://pkg.go.dev/github.com/wahrwelt-kit/go-pgkit)
+[![Go Report Card](https://goreportcard.com/badge/github.com/wahrwelt-kit/go-pgkit)](https://goreportcard.com/report/github.com/wahrwelt-kit/go-pgkit)
 
 PostgreSQL helpers for pgx: error checks, timestamptz converters, pool with retry, and migration runners (goose and golang-migrate).
 
 ## Install
 
 ```bash
-go get github.com/takuya-go-kit/go-pgkit
+go get github.com/wahrwelt-kit/go-pgkit
 ```
 
 ```go
-import "github.com/takuya-go-kit/go-pgkit/pgutil"
-import "github.com/takuya-go-kit/go-pgkit/postgres"
-import "github.com/takuya-go-kit/go-pgkit/migrator/goose"
-import "github.com/takuya-go-kit/go-pgkit/migrator/migrate"
+import "github.com/wahrwelt-kit/go-pgkit/pgutil"
+import "github.com/wahrwelt-kit/go-pgkit/postgres"
+import "github.com/wahrwelt-kit/go-pgkit/migrator/goose"
+import "github.com/wahrwelt-kit/go-pgkit/migrator/migrate"
 ```
 
 ## Subpackages

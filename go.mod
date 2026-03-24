@@ -1,4 +1,4 @@
-module github.com/takuya-go-kit/go-pgkit
+module github.com/wahrwelt-kit/go-pgkit
 
 go 1.25.0
 

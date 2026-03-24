@@ -10,7 +10,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 
-	"github.com/takuya-go-kit/go-pgkit/postgres"
+	"github.com/wahrwelt-kit/go-pgkit/postgres"
 )
 
 // Run runs pressly/goose "up" migrations from migrationsPath using the given PostgreSQL connection string. ctx is used for cancellation. connStr and migrationsPath must be non-empty. migrationsPath is cleaned with filepath.Clean and should be under application control (not user input). Uses a single connection (SetMaxOpenConns(1)).

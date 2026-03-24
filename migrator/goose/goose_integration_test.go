@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/require"
 
-	"github.com/takuya-go-kit/go-pgkit/migrator/testutil"
+	"github.com/wahrwelt-kit/go-pgkit/migrator/testutil"
 )
 
 func TestRun(t *testing.T) {
