@@ -11,6 +11,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // postgres database driver
 	_ "github.com/golang-migrate/migrate/v4/source/file"       // file source driver
+
 	"github.com/wahrwelt-kit/go-pgkit/postgres"
 )
 

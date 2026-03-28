@@ -148,7 +148,6 @@ formatters:
   enable:
     - gofmt
     - gofumpt
-    - gci
     - goimports
   settings:
     gofumpt:
