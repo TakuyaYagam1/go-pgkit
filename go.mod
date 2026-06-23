@@ -9,7 +9,7 @@ require (
 	github.com/pressly/goose/v3 v3.27.1
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.43.0
-	github.com/testcontainers/testcontainers-go/modules/postgres v0.42.0
+	github.com/testcontainers/testcontainers-go/modules/postgres v0.43.0
 )
 
 require (
