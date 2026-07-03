@@ -2,9 +2,12 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -40,6 +43,18 @@ func TestNew_Validation(t *testing.T) {
 			want: "invalid DSN format",
 		},
 		{
+			name: "empty URL",
+			ctx:  context.Background(),
+			cfg:  &Config{URL: ""},
+			want: "URL is empty",
+		},
+		{
+			name: "blank URL",
+			ctx:  context.Background(),
+			cfg:  &Config{URL: " \t\n "},
+			want: "URL is empty",
+		},
+		{
 			name: "MaxConns negative",
 			ctx:  context.Background(),
 			cfg:  &Config{URL: validURL, MaxConns: -1},
@@ -68,6 +83,36 @@ func TestNew_Validation(t *testing.T) {
 			ctx:  context.Background(),
 			cfg:  &Config{URL: validURL, MinConns: 10001},
 			want: "MinConns must be 0..10000",
+		},
+		{
+			name: "RetryTimeout negative",
+			ctx:  context.Background(),
+			cfg:  &Config{URL: validURL, RetryTimeout: -time.Second},
+			want: "RetryTimeout must be >= 0",
+		},
+		{
+			name: "MaxConnLifetime negative",
+			ctx:  context.Background(),
+			cfg:  &Config{URL: validURL, MaxConnLifetime: -time.Second},
+			want: "MaxConnLifetime must be >= 0",
+		},
+		{
+			name: "MaxConnIdleTime negative",
+			ctx:  context.Background(),
+			cfg:  &Config{URL: validURL, MaxConnIdleTime: -time.Second},
+			want: "MaxConnIdleTime must be >= 0",
+		},
+		{
+			name: "HealthCheckPeriod negative",
+			ctx:  context.Background(),
+			cfg:  &Config{URL: validURL, HealthCheckPeriod: -time.Second},
+			want: "HealthCheckPeriod must be >= 0",
+		},
+		{
+			name: "ConnectTimeout negative",
+			ctx:  context.Background(),
+			cfg:  &Config{URL: validURL, ConnectTimeout: -time.Second},
+			want: "ConnectTimeout must be >= 0",
 		},
 	}
 	for _, tt := range tests {
@@ -100,4 +145,45 @@ func TestValidateLimits_ValidBounds(t *testing.T) {
 func TestValidateLimits_MinEqualsMax(t *testing.T) {
 	t.Parallel()
 	require.NoError(t, validateLimits(&Config{URL: testPgURL, MaxConns: 5, MinConns: 5}))
+}
+
+func TestNew_ConfigureError(t *testing.T) {
+	t.Parallel()
+	wantErr := errors.New("configure failed")
+	called := false
+	_, err := New(context.Background(), &Config{
+		URL: testPgURL,
+		Configure: func(*pgxpool.Config) error {
+			called = true
+			return wantErr
+		},
+	})
+	require.ErrorIs(t, err, wantErr)
+	require.True(t, called)
+}
+
+func TestWithinTx_Validation(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name string
+		ctx  context.Context
+		fn   func() error
+		want string
+	}{
+		{name: "nil context", ctx: nil, fn: func() error { return nil }, want: "context is nil"},
+		{name: "nil pool", ctx: context.Background(), fn: func() error { return nil }, want: "pool is nil"},
+		{name: "nil function", ctx: context.Background(), fn: nil, want: "function is nil"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			var fn func(pgx.Tx) error
+			if tt.fn != nil {
+				fn = func(pgx.Tx) error { return tt.fn() }
+			}
+			err := WithinTx(tt.ctx, nil, fn)
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), tt.want)
+		})
+	}
 }

@@ -3,6 +3,13 @@ on:
   push:
     branches: [main, master]
   pull_request:
+
+permissions:
+  contents: read
+
+env:
+  GO_VERSION: "1.26.4"
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -10,12 +17,52 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
-      - name: Vet and test
+          go-version: ${{ env.GO_VERSION }}
+      - name: Test
         run: |
-          go mod download
+          go mod tidy -diff
           go vet ./...
-          go test -race -tags=integration ./...
+          go test ./...
+
+  race:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Race
+        run: go test -race ./...
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Integration
+        run: make test-integration
+
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Fuzz smoke
+        run: make test-fuzz FUZZTIME=3s
+
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Actionlint
+        run: make lint-actions
 
   lint:
     runs-on: ubuntu-latest
@@ -23,7 +70,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: ${{ env.GO_VERSION }}
       - uses: golangci/golangci-lint-action@v9.2.0
         with:
           version: v2.12.1

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
@@ -29,14 +30,19 @@ func New(ctx context.Context, cfg *Config) (*pgxpool.Pool, error) {
 	if cfg == nil {
 		return nil, errors.New("postgres - New: config is nil")
 	}
+	if err := validateConfig(cfg); err != nil {
+		return nil, err
+	}
 	poolCfg, err := pgxpool.ParseConfig(cfg.URL)
 	if err != nil {
 		return nil, fmt.Errorf("postgres - New: invalid DSN format: %w", err)
 	}
-	if err := validateLimits(cfg); err != nil {
-		return nil, err
-	}
 	applyPoolConfig(poolCfg, cfg)
+	if cfg.Configure != nil {
+		if err := cfg.Configure(poolCfg); err != nil {
+			return nil, fmt.Errorf("postgres - New: configure: %w", err)
+		}
+	}
 
 	pool, err := pgxpool.NewWithConfig(ctx, poolCfg)
 	if err != nil {
@@ -48,6 +54,16 @@ func New(ctx context.Context, cfg *Config) (*pgxpool.Pool, error) {
 		return nil, err
 	}
 	return pool, nil
+}
+
+func validateConfig(cfg *Config) error {
+	if strings.TrimSpace(cfg.URL) == "" {
+		return errors.New("postgres - New: URL is empty")
+	}
+	if err := validateLimits(cfg); err != nil {
+		return err
+	}
+	return validateDurations(cfg)
 }
 
 func validateLimits(cfg *Config) error {
@@ -67,6 +83,25 @@ func validateLimits(cfg *Config) error {
 	}
 	if minConns > maxConns {
 		return fmt.Errorf("postgres - New: MinConns (%d) must be <= MaxConns (%d)", minConns, maxConns)
+	}
+	return nil
+}
+
+func validateDurations(cfg *Config) error {
+	durations := []struct {
+		name  string
+		value time.Duration
+	}{
+		{name: "RetryTimeout", value: cfg.RetryTimeout},
+		{name: "MaxConnLifetime", value: cfg.MaxConnLifetime},
+		{name: "MaxConnIdleTime", value: cfg.MaxConnIdleTime},
+		{name: "HealthCheckPeriod", value: cfg.HealthCheckPeriod},
+		{name: "ConnectTimeout", value: cfg.ConnectTimeout},
+	}
+	for _, d := range durations {
+		if d.value < 0 {
+			return fmt.Errorf("postgres - New: %s must be >= 0", d.name)
+		}
 	}
 	return nil
 }

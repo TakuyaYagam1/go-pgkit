@@ -4,7 +4,9 @@
 //
 // IsNoRows reports whether err is or wraps pgx.ErrNoRows (use after QueryRow when a missing row is expected)
 // IsPgErrorCode reports whether err is a PgError with the given SQLSTATE code
-// IsPgUniqueViolation, IsForeignKeyViolation, IsNotNullViolation are conveniences for common codes (23505, 23503, 23502)
+// IsPgUniqueViolation, IsForeignKeyViolation, IsNotNullViolation, and IsCheckViolation are conveniences for
+// common constraint codes (23505, 23503, 23502, 23514). IsSerializationFailure, IsDeadlockDetected, and
+// IsRetryableTxError help classify transaction errors that are commonly retried at the transaction boundary
 //
 // # Timestamp conversion
 //

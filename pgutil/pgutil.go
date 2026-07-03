@@ -9,6 +9,15 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const (
+	CodeUniqueViolation      = "23505"
+	CodeForeignKeyViolation  = "23503"
+	CodeNotNullViolation     = "23502"
+	CodeCheckViolation       = "23514"
+	CodeSerializationFailure = "40001"
+	CodeDeadlockDetected     = "40P01"
+)
+
 // IsNoRows reports whether err is or wraps pgx.ErrNoRows. Use after QueryRow when a missing row is acceptable
 func IsNoRows(err error) bool {
 	return err != nil && errors.Is(err, pgx.ErrNoRows)
@@ -22,17 +31,37 @@ func IsPgErrorCode(err error, code string) bool {
 
 // IsPgUniqueViolation reports whether err is a PostgreSQL unique constraint violation (SQLSTATE 23505)
 func IsPgUniqueViolation(err error) bool {
-	return IsPgErrorCode(err, "23505")
+	return IsPgErrorCode(err, CodeUniqueViolation)
 }
 
 // IsForeignKeyViolation reports whether err is a PostgreSQL foreign key violation (SQLSTATE 23503)
 func IsForeignKeyViolation(err error) bool {
-	return IsPgErrorCode(err, "23503")
+	return IsPgErrorCode(err, CodeForeignKeyViolation)
 }
 
 // IsNotNullViolation reports whether err is a PostgreSQL not null violation (SQLSTATE 23502)
 func IsNotNullViolation(err error) bool {
-	return IsPgErrorCode(err, "23502")
+	return IsPgErrorCode(err, CodeNotNullViolation)
+}
+
+// IsCheckViolation reports whether err is a PostgreSQL check constraint violation (SQLSTATE 23514)
+func IsCheckViolation(err error) bool {
+	return IsPgErrorCode(err, CodeCheckViolation)
+}
+
+// IsSerializationFailure reports whether err is a PostgreSQL serialization failure (SQLSTATE 40001)
+func IsSerializationFailure(err error) bool {
+	return IsPgErrorCode(err, CodeSerializationFailure)
+}
+
+// IsDeadlockDetected reports whether err is a PostgreSQL deadlock detected error (SQLSTATE 40P01)
+func IsDeadlockDetected(err error) bool {
+	return IsPgErrorCode(err, CodeDeadlockDetected)
+}
+
+// IsRetryableTxError reports whether err is a transaction error commonly safe to retry at the transaction boundary
+func IsRetryableTxError(err error) bool {
+	return IsSerializationFailure(err) || IsDeadlockDetected(err)
 }
 
 // PgErrorCode extracts the SQLSTATE code from err, or "" if err is not a PgError

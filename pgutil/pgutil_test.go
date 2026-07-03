@@ -48,6 +48,24 @@ func TestIsNotNullViolation(t *testing.T) {
 	assert.False(t, IsNotNullViolation(errors.New("other")))
 }
 
+func TestAdditionalPgErrorHelpers(t *testing.T) {
+	t.Parallel()
+	checkErr := fmt.Errorf("wrap: %w", &pgconn.PgError{Code: CodeCheckViolation})
+	serializationErr := fmt.Errorf("wrap: %w", &pgconn.PgError{Code: CodeSerializationFailure})
+	deadlockErr := fmt.Errorf("wrap: %w", &pgconn.PgError{Code: CodeDeadlockDetected})
+	uniqueErr := fmt.Errorf("wrap: %w", &pgconn.PgError{Code: CodeUniqueViolation})
+
+	assert.True(t, IsCheckViolation(checkErr))
+	assert.True(t, IsSerializationFailure(serializationErr))
+	assert.True(t, IsDeadlockDetected(deadlockErr))
+	assert.True(t, IsRetryableTxError(serializationErr))
+	assert.True(t, IsRetryableTxError(deadlockErr))
+	assert.False(t, IsRetryableTxError(uniqueErr))
+	assert.False(t, IsCheckViolation(nil))
+	assert.False(t, IsSerializationFailure(errors.New("other")))
+	assert.False(t, IsDeadlockDetected(errors.New("other")))
+}
+
 func TestPgErrorCode(t *testing.T) {
 	t.Parallel()
 	assert.Equal(t, "23505", PgErrorCode(&pgconn.PgError{Code: "23505"}))

@@ -1,4 +1,4 @@
-// Package testutil provides test helpers for go-pgkit integration tests
+// Package testutil provides internal test helpers for go-pgkit integration tests
 package testutil
 
 import (

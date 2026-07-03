@@ -31,6 +31,16 @@ func TestMaskURL(t *testing.T) {
 			in:     "postgres://user@localhost:5432/db",
 			noShow: nil,
 		},
+		{
+			name:   "keyword password",
+			in:     "host=localhost user=u password=secret dbname=db",
+			noShow: []string{"secret"},
+		},
+		{
+			name:   "quoted keyword password",
+			in:     "host=localhost password='quoted secret' dbname=db",
+			noShow: []string{"quoted secret"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

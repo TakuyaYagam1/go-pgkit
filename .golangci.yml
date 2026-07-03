@@ -10,6 +10,7 @@ linters:
     - funlen
     - gochecknoglobals
     - godoclint
+    - gomodguard
     - ireturn
     - lll
     - mnd
